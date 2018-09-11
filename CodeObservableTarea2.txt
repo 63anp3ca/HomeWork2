@@ -1,0 +1,326 @@
+// URL: https://beta.observablehq.com/@63anp3ca/ejercicio-gp2
+// Title: Tarea 2 ga.perez
+// Author: 63anp3ca (@63anp3ca)
+// Version: 367
+// Runtime version: 1
+
+const m0 = {
+  id: "6e0f0b5ea691336e@367",
+  variables: [
+    {
+      inputs: ["md"],
+      value: (function(md){return(
+md`# Tarea 2 ga.perez`
+)})
+    },
+    {
+      inputs: ["md"],
+      value: (function(md){return(
+md`### Presentado por : Gerardo Antonio Perez Clavijo
+### Carnet : 20151406
+### Correo : ga.perez@uniandes.edu.co`
+)})
+    },
+    {
+      inputs: ["md"],
+      value: (function(md){return(
+md`# Salidas de colombianos desde el territorio nacional.
+
+Muestra el consolidado de salidas de colombianos desde el territorio nacional a partir del 2012, discriminado por país destino y género
+
+Información extraída del portal Datos Abierto de Colombia en el siguiente enlace:
+https://www.datos.gov.co/Estad-sticas-Nacionales/Salidas-de-colombianos-desde-el-territorio-naciona/efw5-jiej
+`
+)})
+    },
+    {
+      inputs: ["md"],
+      value: (function(md){return(
+ md`## Guia 
+En la visualización nos permiste pasandando el mouse sobre cada barra tendra un detalle de la serie:
+- Nombre de la Serie (Femenino -Masculino y Total)
+- Peso de la serie 
+- El la parte derecha se presenta el  mapa de conveciones que describe las series
+
+
+`
+)})
+    },
+    {
+      inputs: ["md"],
+      value: (function(md){return(
+md`### Gráfica salidad de Colombianos 2012`
+)})
+    },
+    {
+      inputs: ["md"],
+      value: (function(md){return(
+md`#### Desde Colombia a :`
+)})
+    },
+    {
+      name: "viewof paisKey",
+      inputs: ["DOM","mydata"],
+      value: (function(DOM,mydata){return(
+DOM.select([...new Set(mydata.map(item => item.pa_s_destino))])
+)})
+    },
+    {
+      name: "paisKey",
+      inputs: ["Generators","viewof paisKey"],
+      value: (G, _) => G.input(_)
+    },
+    {
+      name: "chart2",
+      inputs: ["d3","DOM","width","height","filteredData","x0","keys","x1","y","margin","z","xAxis","yAxis"],
+      value: (function(d3,DOM,width,height,filteredData,x0,keys,x1,y,margin,z,xAxis,yAxis)
+{
+    const svg = d3.select(DOM.svg(width, height));
+    let tooltip ;
+   
+    svg.append("g")
+      .selectAll("g").data(filteredData).enter().append("g")
+      .attr("transform", function(d) { return "translate(" + x0(d.mes) + ",0)"; })
+      .selectAll("rect")
+      .data(function(d) { return keys.map(function(key) { return {key: key, value: d[key]}; }); })
+      .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", function(d) { return x1(d.key); })
+      .attr("y", function(d) { return y(d.value); })
+      .attr("width", x1.bandwidth)
+      .attr("height", function(d) { return height - margin.bottom - y(d.value); })
+      .attr("fill", function(d) { return z(d.key); })
+      .on("mouseover", function(d) {
+          console.log(d);
+          d3.select(this)
+          .attr("fill", "red")
+          tooltip
+            .attr("x", 700)
+            .attr("y", 10)
+            .style("fill", "red")
+            .style("font-weight", "bold")
+            .text(`Serie=${d.key} - total=${d.value} `);       
+      
+          console.log(tooltip.node());
+        })
+        .on("mouseout", function(d, i) {
+         console.log(d);
+         d3.select(this)
+        .style("color", "red")
+        .attr("fill", function(d) { return z(d.key); })
+        })
+  ;
+  
+   tooltip = svg.append("g")
+    .append("text")
+    .style("font-size", "10pt")
+    .style("font-family", "Arial")  
+    .style("color", "red")
+    .style("background","none repeat scroll 0 0 #ffffff")
+    .style("border","2px solid #6F257")
+    .style("padding","14px")
+    .style("text-aling","center")
+    .attr("x", -100);
+  
+  svg.append("g")
+      .call(xAxis);
+  
+  svg.append("g")
+      .call(yAxis);
+  
+  var legend = svg.append("g").append("g")
+      .attr("font-family", "sans-serif")
+      .attr("font-size", 12)
+      .attr("text-anchor", "end")
+    
+    .selectAll("g")
+    .data(keys.slice().reverse())
+    .enter().append("g")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  legend.append("rect")
+      .attr("x", width - 29)
+      .attr("width", 40)
+      .attr("height", 18)
+      .attr("fill", z);
+
+  legend.append("text")
+      .attr("x", width - 34)
+      .attr("y", 8.5)
+      .attr("dy", "0.32em")
+          .attr("fill", "#696969")
+
+      .text(function(d) { return d; });
+  
+  return svg.node()
+ 
+}
+)
+    },
+    {
+      name: "width",
+      value: (function(){return(
+960
+)})
+    },
+    {
+      name: "height",
+      value: (function(){return(
+350
+)})
+    },
+    {
+      name: "x",
+      inputs: ["d3","filteredData","margin","width"],
+      value: (function(d3,filteredData,margin,width){return(
+d3.scaleBand()
+    .domain(filteredData.map(d => d.nombre))
+    .range([margin.left, width - margin.right])
+    .padding(0.1)
+)})
+    },
+    {
+      name: "x0",
+      inputs: ["d3","margin","width","filteredData"],
+      value: (function(d3,margin,width,filteredData){return(
+d3.scaleBand()
+.rangeRound ([margin.left, width - margin.right*4])
+.paddingInner(0.1)
+.domain(filteredData.map(d => d.mes))
+)})
+    },
+    {
+      name: "x1",
+      inputs: ["d3","keys","x0"],
+      value: (function(d3,keys,x0){return(
+d3.scaleBand()
+.padding(0.07)
+.domain(keys).rangeRound([0, x0.bandwidth()])
+)})
+    },
+    {
+      name: "z",
+      inputs: ["d3"],
+      value: (function(d3){return(
+d3.scaleOrdinal()
+.range(["#7b6888",  "#a05d56", "#ff8c00", "#6b486b", "#d0743c"])
+)})
+    },
+    {
+      name: "keys",
+      value: (function(){return(
+["total", "masculino", "femenino"]
+)})
+    },
+    {
+      name: "filteredData",
+      inputs: ["processedData","paisKey"],
+      value: (function(processedData,paisKey){return(
+processedData
+  .filter(d => d.key === paisKey)
+  [0].values
+)})
+    },
+    {
+      name: "processedData",
+      inputs: ["d3","mydata","paisKey"],
+      value: (function(d3,mydata,paisKey)
+{
+  const nested = d3.nest()
+    .key(d => d.pa_s_destino)
+    .entries(mydata)
+  
+  const processedGeos = nested.map(salidas => 
+   {
+    const totalanosexo = salidas.values.find(j => j.pa_s_destino === paisKey)
+   
+    const processedSectors = salidas.values
+     
+      .map(d => {
+           return {
+          pa_s_destino: d.pa_s_destino,
+          masculino: d.masculino ,
+          femenino: d.femenino ,
+          total  :d.total ,   
+          mes    :d.mes ,   
+             
+         }
+      })
+    
+    
+    processedSectors.push({
+      pa_s_destino: salidas.values[0].pa_s_destino,
+      masculino: salidas.values[0].masculino,
+      femenino: salidas.values[0].femenino,
+      total: salidas.values[0].total,
+      mes: salidas.values[0].mes,
+    
+      
+    })
+    return {
+      key: salidas.key,
+      values: processedSectors
+    }
+  })
+  return processedGeos
+}
+)
+    },
+    {
+      name: "y",
+      inputs: ["d3","filteredData","height","margin"],
+      value: (function(d3,filteredData,height,margin){return(
+d3.scaleLinear()
+    .domain([0, d3.max(filteredData, d => d.total)]).nice()
+    .range([height - margin.bottom, margin.top])
+)})
+    },
+    {
+      name: "xAxis",
+      inputs: ["height","margin","d3","x0"],
+      value: (function(height,margin,d3,x0){return(
+g => g
+    .attr("transform", `translate(0,${height - margin.bottom})`)
+      .call(d3.axisBottom(x0)
+       .tickSizeOuter(0))
+)})
+    },
+    {
+      name: "yAxis",
+      inputs: ["margin","d3","y"],
+      value: (function(margin,d3,y){return(
+g => g
+    .attr("transform", `translate(${margin.left},0)`)
+    .call(d3.axisLeft(y))
+    .call(g => g.select(".domain").remove())
+)})
+    },
+    {
+      name: "margin",
+      value: (function(){return(
+{ top: 20, right: 20, bottom: 30, left: 40 }
+)})
+    },
+    {
+      name: "mydata",
+      inputs: ["d3"],
+      value: (function(d3){return(
+d3.json("https://www.datos.gov.co/resource/i8tu-w5zj.json")
+)})
+    },
+    {
+      name: "d3",
+      inputs: ["require"],
+      value: (function(require){return(
+require("d3@5")
+)})
+    }
+  ]
+};
+
+const notebook = {
+  id: "6e0f0b5ea691336e@367",
+  modules: [m0]
+};
+
+export default notebook;
